@@ -1,0 +1,35 @@
+.word {
+	float: left;
+	vertical-align: bottom;
+	height: 2em;
+}
+
+.word_kana {
+	text-align: center;
+	font-size: 0.8em;
+}
+
+.word_kanji {
+	text-align: center;	
+}
+
+.word_not_found {
+	line-height: 3em;
+}
+
+.word_found {
+	padding: 0 0.2em 0 0.2em;
+	cursor: pointer;
+}
+
+.clear {
+	clear: both;
+}
+
+.entry_group {
+	padding-top: 1em;
+}
+
+.trans {
+	clear: both;
+}

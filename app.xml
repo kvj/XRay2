@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://ns.adobe.com/air/application/3.1" minimumPatchLevel="0"> 
+    <id>org.kvj.xray2</id>
+    <versionNumber>0</versionNumber>
+    <filename>XRay2</filename>
+    <name>
+        <text xml:lang="en">XRay2</text>
+    </name>
+    <installFolder>XRay2</installFolder>
+    <programMenuFolder>XRay2</programMenuFolder>
+    <icon>
+        <image128x128>img/logo_128.png</image128x128>
+        <image48x48>img/logo_48.png</image48x48>
+        <image32x32>img/logo_32.png</image32x32>
+        <image16x16>img/logo_16.png</image16x16>
+    </icon>
+    <initialWindow>
+        <content>app.html</content>
+        <visible>true</visible>
+        <width>650</width>
+        <height>700</height>
+    </initialWindow>
+</application>
+

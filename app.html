@@ -1,0 +1,104 @@
+<!DOCTYPE HTML>
+<html debug="true">
+    <head>
+        <title>XRay2</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+        <meta name="viewport" content="target-densitydpi=device-dpi, width=device-width, initial-scale=1, user-scalable=no"> 
+        <script type="text/javascript" src="lib/common-web/yepnope.1.5.3-min.js"></script>
+        <script type="text/javascript" src="app/xray2.js"></script>
+    </head>
+    <body>
+		<div data-role="page" id="main">
+
+			<div data-role="header" data-position="fixed">
+				<h1>Welcome</h1>
+				<a href="#" id="main_settings">Settings</a>
+			</div><!-- /header -->
+
+			<div data-role="content" >	
+				<h2>Quick text</h2>
+				<form>
+					<label for="quick_text">Quick text</label>
+					<textarea id="quick_text"></textarea>
+					<a href="#" id="quick_text_proceed" data-role="button">Proceed</a>
+				</form>
+			</div>
+			
+			<div data-role="footer" data-position="fixed">
+				<h4>(C)</h4>
+			</div>
+		</div>
+		<div data-role="page" id="dicts">
+
+			<div data-role="header" data-position="fixed">
+				<a href="#" id="dicts_done">Done</a>
+				<h1>Dictionaries</h1>
+				<a href="#" id="dicts_add">Add</a>
+			</div>
+
+			<div data-role="content" >
+				<ul id="dicts_list" data-role="listview" data-inset="true"></ul>
+			</div>
+			
+		</div>
+		<div data-role="page" id="text">
+
+			<div data-role="header" data-position="fixed">
+				<a href="#" id="text_done">Done</a>
+				<h1>Text</h1>
+				<a href="#" id="text_search">Search</a>
+			</div>
+
+			<div data-role="content" >
+				<div id="text_here"></div>
+			</div>
+		</div>
+		<div data-role="dialog" id="add_dict">
+			<div data-role="content" >	
+				<form>
+					<label for="dict_name">Name:</label>
+					<input type="text" id="dict_name"/>
+					<label for="dict_rexp">Regexp:</label>
+					<input type="text" id="dict_rexp"/>
+					<input type="hidden" id="dict_file"/>
+					<a href="#" id="add_dict_file" data-role="button">Select file</a>
+					<a href="#" id="add_dict_save" data-role="button">Add</a>
+				</form>
+			</div>
+		</div>
+		<div data-role="page" id="dict">
+			<div data-role="header" data-position="fixed">
+				<a href="#" id="dict_done" data-rel="back">Back</a>
+				<h1>Dictionary</h1>
+				<a href="#" id="dict_add">Add...</a>
+			</div>
+			<div data-role="content" >
+				<input type="search" id="search" value="" />
+				<ul id="dict_results" data-role="listview" data-inset="true"></ul>
+			</div>
+		</div>
+		<div data-role="dialog" id="add_word" data-close-btn-text="Close">
+			<div data-role="content">	
+				<form>
+					<label for="word_word">Word:</label>
+					<input type="text" id="word_word"/>
+					<label for="word_kana">Kana:</label>
+					<input type="text" id="word_kana"/>
+					<label for="word_trans">Translation:</label>
+					<input type="text" id="word_trans"/>
+					<label for="word_dict">Target:</label>
+					<select id="word_dict" data-native-menu="false">
+					</select>
+					<div class="ui-grid-a">
+						<div class="ui-block-a">
+							<a href="#" id="add_word_save" data-role="button">Add</a>
+						</div>
+						<div class="ui-block-b">
+							<a href="#" id="add_word_cancel" data-role="button">Cancel</a>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+    </body>
+</html>
