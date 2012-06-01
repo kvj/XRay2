@@ -201,7 +201,7 @@ class Application
     showDictionaries: () ->
         list = $('#dicts_list').empty()
         for i, item of @dictConfig
-            log 'item', item.name
+            # log 'item', item.name
             li = $(document.createElement('li')).appendTo(list)
             $(document.createElement('h3')).appendTo(li).text(item.name)
             $(document.createElement('p')).appendTo(li).text(item.file)
@@ -209,7 +209,7 @@ class Application
             $(document.createElement('a')).appendTo(li).attr('href', '#')
             removeBtn = $(document.createElement('a')).appendTo(li).attr('href', '#')
             removeBtn.bind 'click', {index: i}, (e) =>
-                log 'Remove', e.data.index
+                # log 'Remove', e.data.index
                 @dictConfig.splice e.data.index, 1
                 @saveDictionaries()
                 @showDictionaries()
@@ -227,7 +227,7 @@ class Application
     showOpenFileDialog: ->
         file = new air.File()
         file.addEventListener 'select', (e) =>
-            log 'File selected', e.target.nativePath
+            # log 'File selected', e.target.nativePath
             $('#dict_file').val e.target.nativePath
         file.browseForOpen 'Select file with dictionary'
 
