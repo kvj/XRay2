@@ -193,7 +193,7 @@
   })(DBProvider);
 
   yepnope({
-    load: ['lib/custom-web/cross-utils.js', 'lib/common-web/jquery-1.7.1.min.js', 'lib/common-web/underscore-min.js', 'lib/common-web/underscore.strings.js', 'lib/custom-web/date.js', 'lib/common-web/json2.js', 'lib/custom-web/layout.js'],
+    load: ['lib/custom-web/cross-utils.js', 'lib/common-web/jquery-1.7.2.min.js', 'lib/common-web/underscore-min.js', 'lib/common-web/underscore.strings.js', 'lib/custom-web/date.js', 'lib/common-web/json2.js', 'lib/custom-web/layout.js'],
     complete: function() {
       return yepnope([
         {
@@ -215,6 +215,18 @@
   });
 
   Application = (function() {
+
+    Application.prototype.wordsTimeout = 5;
+
+    Application.prototype.wordsFont = 1.0;
+
+    Application.prototype.wordsOnTop = false;
+
+    Application.prototype.wordsLinesVisible = [true, true, true];
+
+    Application.prototype.wordsCurrent = 0;
+
+    Application.prototype.dict = [];
 
     function Application() {
       var _this = this;
@@ -247,6 +259,9 @@
       $('#dicts_add').bind('click', function() {
         return _this.showAddDictionary();
       });
+      $('#main_word_panel').bind('click', function() {
+        return _this.showWordsPanel();
+      });
       $('#add_dict_file').bind('click', function() {
         return _this.showOpenFileDialog();
       });
@@ -270,6 +285,33 @@
       $('#dict_add').bind('click', function() {
         return _this.showAddWordDialog('', '', '');
       });
+      $('#word_panel_done').bind('click', function() {
+        return _this.hideWordsPanel();
+      });
+      $('#word_panel_ontop').bind('click', function() {
+        return _this.wordsPanelOnTopToggle();
+      });
+      $('#word_panel_font_up').bind('click', function() {
+        return _this.wordsPanelFont(1);
+      });
+      $('#word_panel_font_down').bind('click', function() {
+        return _this.wordsPanelFontDown(-1);
+      });
+      $('#word_panel_timer_up').bind('click', function() {
+        return _this.wordsPanelTimer(1);
+      });
+      $('#word_panel_timer_down').bind('click', function() {
+        return _this.wordsPanelTimer(-1);
+      });
+      $('#word_panel_line0').bind('click', function() {
+        return _this.wordsPanelLine(0);
+      });
+      $('#word_panel_line1').bind('click', function() {
+        return _this.wordsPanelLine(1);
+      });
+      $('#word_panel_line2').bind('click', function() {
+        return _this.wordsPanelLine(2);
+      });
       this.db.open(false, function(err) {
         if (err) {
           alert('DB error: ' + err);
@@ -289,23 +331,21 @@
     };
 
     Application.prototype.showDictionaries = function() {
-      var i, item, li, list, removeBtn, _ref,
+      var i, item, li, list, removeBtn, selectBtn, _ref,
         _this = this;
       list = $('#dicts_list').empty();
       _ref = this.dictConfig;
       for (i in _ref) {
         item = _ref[i];
-        log('item', item.name);
         li = $(document.createElement('li')).appendTo(list);
-        $(document.createElement('h3')).appendTo(li).text(item.name);
-        $(document.createElement('p')).appendTo(li).text(item.file);
-        $(document.createElement('p')).appendTo(li).text(item.rexp);
-        $(document.createElement('a')).appendTo(li).attr('href', '#');
+        selectBtn = $(document.createElement('a')).appendTo(li).attr('href', '#');
+        $(document.createElement('h3')).appendTo(selectBtn).text(item.name);
+        $(document.createElement('p')).appendTo(selectBtn).text(item.file);
+        $(document.createElement('p')).appendTo(selectBtn).text(item.rexp);
         removeBtn = $(document.createElement('a')).appendTo(li).attr('href', '#');
         removeBtn.bind('click', {
           index: i
         }, function(e) {
-          log('Remove', e.data.index);
           _this.dictConfig.splice(e.data.index, 1);
           _this.saveDictionaries();
           _this.showDictionaries();
@@ -327,7 +367,6 @@
         _this = this;
       file = new air.File();
       file.addEventListener('select', function(e) {
-        log('File selected', e.target.nativePath);
         return $('#dict_file').val(e.target.nativePath);
       });
       return file.browseForOpen('Select file with dictionary');
@@ -483,7 +522,7 @@
     Application.prototype.getSearchResults = function(word, handler) {
       var _this = this;
       if (!word) return handler(null, []);
-      return this.db.query('select * from dict where kana=? or kanji=? order by kanji desc, kana', [word, word], function(err, data) {
+      return this.db.query('select * from dict where kana=? or kanji like ? order by kanji desc, kana', [word, word + '%'], function(err, data) {
         if (err) return handler(err);
         return handler(null, data);
       });
@@ -641,6 +680,55 @@
       };
       this.dict.push(word);
       return this.proceedQuickText(true);
+    };
+
+    Application.prototype.showWordsPanel = function() {
+      $.mobile.changePage($('#word_panel'));
+      this.showWordInPanel();
+      return this.wordsPanelTimer(0);
+    };
+
+    Application.prototype.hideWordsPanel = function() {
+      if (this.wordsTimeoutID) clearInterval(this.wordsTimeoutID);
+      return $.mobile.changePage($('#main'), {
+        reverse: true
+      });
+    };
+
+    Application.prototype.showWordInPanel = function() {
+      if (this.wordsCurrent >= this.dict.length) return;
+      $('#word_lines').css('font-size', "" + this.wordsFont + "em");
+      $('#word_line0').text(this.dict[this.wordsCurrent].word);
+      $('#word_line1').text(this.dict[this.wordsCurrent].kana);
+      return $('#word_line2').text(this.dict[this.wordsCurrent].trans);
+    };
+
+    Application.prototype.wordsPanelFont = function(dir) {
+      if ((dir < 0 && this.wordsFont > 0.5) || dir > 0) {
+        this.wordsFont += dir * 0.1;
+      }
+      return this.showWordInPanel();
+    };
+
+    Application.prototype.wordsPanelLine = function(index) {
+      this.wordsLinesVisible[index] = !this.wordsLinesVisible[index];
+      return $('#word_line' + index).css('visibility', this.wordsLinesVisible[index] ? 'visible' : 'hidden');
+    };
+
+    Application.prototype.wordsPanelTimer = function(dir) {
+      var _this = this;
+      if ((dir < 0 && this.wordsTimeout > 1) || dir > 0) this.wordsTimeout += dir;
+      $('#word_panel_h1').text("Word panel (" + this.wordsTimeout + ")");
+      if (this.wordsTimeoutID) clearInterval(this.wordsTimeoutID);
+      return this.wordsTimeoutID = setInterval(function() {
+        _this.wordsCurrent = Math.floor(Math.random() * _this.dict.length);
+        return _this.showWordInPanel();
+      }, 1000 * this.wordsTimeout);
+    };
+
+    Application.prototype.wordsPanelOnTopToggle = function() {
+      this.wordsOnTop = !this.wordsOnTop;
+      return window.nativeWindow.alwaysInFront = this.wordsOnTop;
     };
 
     return Application;

@@ -125,7 +125,7 @@ class AirDBProvider extends DBProvider
 
 
 yepnope({
-    load: ['lib/custom-web/cross-utils.js', 'lib/common-web/jquery-1.7.1.min.js', 'lib/common-web/underscore-min.js', 'lib/common-web/underscore.strings.js', 'lib/custom-web/date.js', 'lib/common-web/json2.js', 'lib/custom-web/layout.js']
+    load: ['lib/custom-web/cross-utils.js', 'lib/common-web/jquery-1.7.2.min.js', 'lib/common-web/underscore-min.js', 'lib/common-web/underscore.strings.js', 'lib/custom-web/date.js', 'lib/common-web/json2.js', 'lib/custom-web/layout.js']
     complete: () ->
         yepnope([{
             test: CURRENT_PLATFORM == PLATFORM_AIR
@@ -142,6 +142,13 @@ yepnope({
 })
 
 class Application
+
+    wordsTimeout: 5
+    wordsFont: 1.0
+    wordsOnTop: no
+    wordsLinesVisible: [yes, yes, yes]
+    wordsCurrent: 0
+    dict: []
 
     constructor: () ->
         @db = new AirDBProvider 'app/dict.sqlite'
@@ -167,6 +174,8 @@ class Application
             }
         $('#dicts_add').bind 'click', () =>
             @showAddDictionary()
+        $('#main_word_panel').bind 'click', () =>
+            @showWordsPanel()
         $('#add_dict_file').bind 'click', () =>
             @showOpenFileDialog()
         @reloadDictionaries()
@@ -183,6 +192,24 @@ class Application
             @doAddWord()
         $('#dict_add').bind 'click', () =>
             @showAddWordDialog '', '', ''
+        $('#word_panel_done').bind 'click', () =>
+            @hideWordsPanel()
+        $('#word_panel_ontop').bind 'click', () =>
+            @wordsPanelOnTopToggle()
+        $('#word_panel_font_up').bind 'click', () =>
+            @wordsPanelFont 1
+        $('#word_panel_font_down').bind 'click', () =>
+            @wordsPanelFontDown -1
+        $('#word_panel_timer_up').bind 'click', () =>
+            @wordsPanelTimer 1
+        $('#word_panel_timer_down').bind 'click', () =>
+            @wordsPanelTimer -1
+        $('#word_panel_line0').bind 'click', () =>
+            @wordsPanelLine 0
+        $('#word_panel_line1').bind 'click', () =>
+            @wordsPanelLine 1
+        $('#word_panel_line2').bind 'click', () =>
+            @wordsPanelLine 2
         @db.open no, (err) =>
             if err 
                 # Error opening DB - stop
@@ -203,10 +230,10 @@ class Application
         for i, item of @dictConfig
             # log 'item', item.name
             li = $(document.createElement('li')).appendTo(list)
-            $(document.createElement('h3')).appendTo(li).text(item.name)
-            $(document.createElement('p')).appendTo(li).text(item.file)
-            $(document.createElement('p')).appendTo(li).text(item.rexp)
-            $(document.createElement('a')).appendTo(li).attr('href', '#')
+            selectBtn = $(document.createElement('a')).appendTo(li).attr('href', '#')
+            $(document.createElement('h3')).appendTo(selectBtn).text(item.name)
+            $(document.createElement('p')).appendTo(selectBtn).text(item.file)
+            $(document.createElement('p')).appendTo(selectBtn).text(item.rexp)
             removeBtn = $(document.createElement('a')).appendTo(li).attr('href', '#')
             removeBtn.bind 'click', {index: i}, (e) =>
                 # log 'Remove', e.data.index
@@ -352,7 +379,7 @@ class Application
     getSearchResults: (word, handler) ->
         if not word # No data
             return handler null, []
-        @db.query 'select * from dict where kana=? or kanji=? order by kanji desc, kana', [word, word], (err, data) =>
+        @db.query 'select * from dict where kana=? or kanji like ? order by kanji desc, kana', [word, word+'%'], (err, data) =>
             if err then return handler err
             handler null, data
 
@@ -475,3 +502,47 @@ class Application
         @dict.push word
         @proceedQuickText yes
 
+    showWordsPanel: ->
+        $.mobile.changePage $('#word_panel')
+        @showWordInPanel()
+        @wordsPanelTimer 0
+
+    hideWordsPanel: ->
+        if @wordsTimeoutID
+            clearInterval @wordsTimeoutID
+        $.mobile.changePage $('#main'), {
+            reverse: yes
+        }
+
+    showWordInPanel: ->
+        if @wordsCurrent>=@dict.length # No such word
+            return
+        $('#word_lines').css('font-size', "#{@wordsFont}em")
+        $('#word_line0').text @dict[@wordsCurrent].word
+        $('#word_line1').text @dict[@wordsCurrent].kana
+        $('#word_line2').text @dict[@wordsCurrent].trans
+
+    wordsPanelFont: (dir) ->
+        if (dir<0 and @wordsFont>0.5) or dir>0
+            @wordsFont += dir*0.1
+        @showWordInPanel()
+
+    wordsPanelLine: (index) ->
+        @wordsLinesVisible[index] = not @wordsLinesVisible[index]
+        # $('#word_panel_line'+index).attr('data-theme', if @wordsLinesVisible[index] then 'a' else 'e').button('refresh')
+        $('#word_line'+index).css('visibility', if @wordsLinesVisible[index] then 'visible' else 'hidden')
+
+    wordsPanelTimer: (dir) ->
+        if (dir<0 and @wordsTimeout>1) or dir>0
+            @wordsTimeout += dir
+        $('#word_panel_h1').text "Word panel (#{@wordsTimeout})"
+        if @wordsTimeoutID
+            clearInterval @wordsTimeoutID
+        @wordsTimeoutID = setInterval () =>
+            @wordsCurrent = Math.floor(Math.random()*@dict.length)
+            @showWordInPanel()
+        , 1000*@wordsTimeout
+    
+    wordsPanelOnTopToggle: ->
+        @wordsOnTop = not @wordsOnTop
+        window.nativeWindow.alwaysInFront = @wordsOnTop

@@ -11,14 +11,14 @@
 		<div data-role="page" id="main">
 
 			<div data-role="header" data-position="fixed">
-				<h1>Welcome</h1>
 				<a href="#" id="main_settings">Settings</a>
+				<h1>Welcome</h1>
+				<a href="#" id="main_word_panel">Words</a>
 			</div><!-- /header -->
 
 			<div data-role="content" >	
-				<h2>Quick text</h2>
+				<h3>Quick text</h3>
 				<form>
-					<label for="quick_text">Quick text</label>
 					<textarea id="quick_text"></textarea>
 					<a href="#" id="quick_text_proceed" data-role="button">Proceed</a>
 				</form>
@@ -29,7 +29,6 @@
 			</div>
 		</div>
 		<div data-role="page" id="dicts">
-
 			<div data-role="header" data-position="fixed">
 				<a href="#" id="dicts_done">Done</a>
 				<h1>Dictionaries</h1>
@@ -39,7 +38,6 @@
 			<div data-role="content" >
 				<ul id="dicts_list" data-role="listview" data-inset="true"></ul>
 			</div>
-			
 		</div>
 		<div data-role="page" id="text">
 
@@ -98,6 +96,36 @@
 						</div>
 					</div>
 				</form>
+			</div>
+		</div>
+		<div data-role="page" id="word_panel">
+			<div data-role="header" data-position="fixed">
+				<a href="#" id="word_panel_done">Done</a>
+				<h1 id="word_panel_h1">Word panel</h1>
+				<a href="#" id="word_panel_ontop">On top</a>
+			</div>
+			<div data-role="content" >
+				<div id="word_lines">
+					<div class="word_line" id="word_line0">XX</div>
+					<div class="word_line" id="word_line1">YY</div>
+					<div class="word_line" id="word_line2">ZZ</div>
+				</div>
+				<div data-role="collapsible">
+					<h3>Configuration</h3>
+					<div data-role="controlgroup" data-type="horizontal">
+						<a href="#" id="word_panel_font_up" data-role="button">Font +</a>
+						<a href="#" id="word_panel_font_down" data-role="button">Font -</a>
+					</div>
+					<div data-role="controlgroup" data-type="horizontal">
+						<a href="#" id="word_panel_timer_up" data-role="button">Timer +</a>
+						<a href="#" id="word_panel_timer_down" data-role="button">Timer -</a>
+					</div>
+					<div data-role="controlgroup">
+						<a href="#" id="word_panel_line0" data-role="button">Hide line 0</a>
+						<a href="#" id="word_panel_line1" data-role="button">Hide line 1</a>
+						<a href="#" id="word_panel_line2" data-role="button">Hide line 2</a>
+					</div>
+				</div>
 			</div>
 		</div>
     </body>

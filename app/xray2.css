@@ -33,3 +33,15 @@
 .trans {
 	clear: both;
 }
+
+#word_lines {
+	padding: 2em;
+}
+
+.word_line {
+	text-align: center;
+}
+
+#word_line0 {
+	font-size: 1.5em;
+}
