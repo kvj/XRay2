@@ -199,7 +199,7 @@ class Application
         $('#word_panel_font_up').bind 'click', () =>
             @wordsPanelFont 1
         $('#word_panel_font_down').bind 'click', () =>
-            @wordsPanelFontDown -1
+            @wordsPanelFont -1
         $('#word_panel_timer_up').bind 'click', () =>
             @wordsPanelTimer 1
         $('#word_panel_timer_down').bind 'click', () =>
@@ -504,12 +504,27 @@ class Application
 
     showWordsPanel: ->
         $.mobile.changePage $('#word_panel')
-        @showWordInPanel()
+        @wordsTimeout = parseInt @db.get('wordsTimeout', 5)
+        @wordsFont = parseFloat @db.get('wordsFont', 1)
+        @wordsOldWidth = window.nativeWindow.width
+        @wordsOldHeight = window.nativeWindow.height
+        width = parseInt @db.get('wordsWidth', 0)
+        height = parseInt @db.get('wordsHeight', 0)
+        if width and height
+            window.nativeWindow.width = width
+            window.nativeWindow.height = height
+        @wordsPanelFont 0
         @wordsPanelTimer 0
 
     hideWordsPanel: ->
         if @wordsTimeoutID
             clearInterval @wordsTimeoutID
+        @db.set('wordsTimeout', @wordsTimeout)
+        @db.set('wordsFont', @wordsFont)
+        @db.set('wordsWidth', window.nativeWindow.width)
+        @db.set('wordsHeight', window.nativeWindow.height)
+        window.nativeWindow.width = @wordsOldWidth
+        window.nativeWindow.height = @wordsOldHeight
         $.mobile.changePage $('#main'), {
             reverse: yes
         }

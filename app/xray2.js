@@ -295,7 +295,7 @@
         return _this.wordsPanelFont(1);
       });
       $('#word_panel_font_down').bind('click', function() {
-        return _this.wordsPanelFontDown(-1);
+        return _this.wordsPanelFont(-1);
       });
       $('#word_panel_timer_up').bind('click', function() {
         return _this.wordsPanelTimer(1);
@@ -683,13 +683,30 @@
     };
 
     Application.prototype.showWordsPanel = function() {
+      var height, width;
       $.mobile.changePage($('#word_panel'));
-      this.showWordInPanel();
+      this.wordsTimeout = parseInt(this.db.get('wordsTimeout', 5));
+      this.wordsFont = parseFloat(this.db.get('wordsFont', 1));
+      this.wordsOldWidth = window.nativeWindow.width;
+      this.wordsOldHeight = window.nativeWindow.height;
+      width = parseInt(this.db.get('wordsWidth', 0));
+      height = parseInt(this.db.get('wordsHeight', 0));
+      if (width && height) {
+        window.nativeWindow.width = width;
+        window.nativeWindow.height = height;
+      }
+      this.wordsPanelFont(0);
       return this.wordsPanelTimer(0);
     };
 
     Application.prototype.hideWordsPanel = function() {
       if (this.wordsTimeoutID) clearInterval(this.wordsTimeoutID);
+      this.db.set('wordsTimeout', this.wordsTimeout);
+      this.db.set('wordsFont', this.wordsFont);
+      this.db.set('wordsWidth', window.nativeWindow.width);
+      this.db.set('wordsHeight', window.nativeWindow.height);
+      window.nativeWindow.width = this.wordsOldWidth;
+      window.nativeWindow.height = this.wordsOldHeight;
       return $.mobile.changePage($('#main'), {
         reverse: true
       });

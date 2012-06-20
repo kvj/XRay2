@@ -9,10 +9,10 @@
     <installFolder>XRay2</installFolder>
     <programMenuFolder>XRay2</programMenuFolder>
     <icon>
-        <image128x128>img/logo_128.png</image128x128>
-        <image48x48>img/logo_48.png</image48x48>
-        <image32x32>img/logo_32.png</image32x32>
-        <image16x16>img/logo_16.png</image16x16>
+        <image128x128>img/icon_128.png</image128x128>
+        <image48x48>img/icon_48.png</image48x48>
+        <image32x32>img/icon_32.png</image32x32>
+        <image16x16>img/icon_16.png</image16x16>
     </icon>
     <initialWindow>
         <content>app.html</content>
